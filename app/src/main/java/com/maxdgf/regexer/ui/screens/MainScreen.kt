@@ -55,6 +55,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.toString
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
@@ -77,28 +78,23 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.datastore.preferences.core.edit
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.maxdgf.regexer.FILES_TYPE
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.map
 
 import com.maxdgf.regexer.OPEN_SOURCE_PROJECT_DESCRIPTION
 import com.maxdgf.regexer.R
 import com.maxdgf.regexer.REGEXER_APP_GITHUB_REPO_LINK
 import com.maxdgf.regexer.REGEXER_APP_INFO
-import com.maxdgf.regexer.REGEX_CHEAT_SHEET_TEXT
 import com.maxdgf.regexer.TEXT_LIMIT
-import com.maxdgf.regexer.core.data_management.databases.saved_regexp_patterns_database.RegexpPatternEntity
+import com.maxdgf.regexer.core.data_management.databases.saved_regexp_patterns_database.entities.RegexpPatternEntity
 import com.maxdgf.regexer.core.regex.RegexpSyntaxAnnotatedStringBuilder
 import com.maxdgf.regexer.core.system_utils.AppManager
 import com.maxdgf.regexer.core.system_utils.ClipBoardManager
 import com.maxdgf.regexer.core.system_utils.FileManager
 import com.maxdgf.regexer.core.system_utils.Toaster
 import com.maxdgf.regexer.core.system_utils.UrlOpener
-import com.maxdgf.regexer.currentSelectionMatchesColor
-import com.maxdgf.regexer.dataStore
 import com.maxdgf.regexer.ui.components.AlertUiDialog
 import com.maxdgf.regexer.ui.components.BottomUiSheet
 import com.maxdgf.regexer.ui.components.ColorPickerSheet
@@ -106,6 +102,7 @@ import com.maxdgf.regexer.ui.components.RegexUiMatch
 import com.maxdgf.regexer.ui.components.RegexerUiDialogTitle
 import com.maxdgf.regexer.ui.components.SavedRegexpPatternUiItem
 import com.maxdgf.regexer.ui.components.SimpleUiDialogTitle
+import com.maxdgf.regexer.ui.data_management.view_models.AppDataStoreViewModel
 import com.maxdgf.regexer.ui.data_management.view_models.SavedRegexpPatternsState
 import com.maxdgf.regexer.ui.data_management.view_models.AppState
 import com.maxdgf.regexer.ui.utils.CurrentThemeColor
@@ -118,9 +115,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainAppScreen(
     appState: AppState = viewModel(),
-    savedRegexpPatternsState: SavedRegexpPatternsState = hiltViewModel()
+    savedRegexpPatternsState: SavedRegexpPatternsState = hiltViewModel(),
+    appDataStoreViewModel: AppDataStoreViewModel = hiltViewModel()
 ) {
-    val defaultSelectionColor = remember { Color.Yellow } // default match selection color
     val drawerState = rememberDrawerState(DrawerValue.Closed) // modal drawer sheet state
     val drawerStateScope = rememberCoroutineScope()
 
@@ -128,7 +125,6 @@ fun MainAppScreen(
     val activity = LocalActivity.current // get activity
     val context = LocalContext.current // get context
     val configuration = LocalConfiguration.current // get screen configuration
-    val dataStore = context.dataStore // get app datastore
 
     // classes init
     val currentThemeColor = remember { CurrentThemeColor() }
@@ -156,29 +152,14 @@ fun MainAppScreen(
     val isGlobalSearchState by appState.isRegexGlobalSearch.collectAsState()
     val isLiteralFlagEnabledState by appState.isLiteralFlagEnabled.collectAsState()
     val savedRegexpPatternsList by savedRegexpPatternsState.savedRegexpPatternsList.collectAsState()
-
-    // asynchronous retrieve the current match highlight color from the datastore and set it to the viewmodel state variable
-    LaunchedEffect(Unit) {
-        val currentRegexMatchesSelectionColor = dataStore.data.map {
-            it[currentSelectionMatchesColor]
-        }
-
-        currentRegexMatchesSelectionColor.collect { colorLong ->
-            colorLong?.let {
-                val color = Color.fromColorLong(it)
-                appState.updateRegexSelectionMatchesColorState(color)
-            } ?: appState.updateRegexSelectionMatchesColorState(defaultSelectionColor) // setting default color
-        }
-    }
+    val currentSelectionColor by appDataStoreViewModel.currentSelectionColor.collectAsState()
 
     // asynchronous setting the color in the datastore parameter when the state of the match highlight color changes
     LaunchedEffect(appState.regexSelectionMatchesColor) {
         appState.regexSelectionMatchesColor?.let { color ->
-            dataStore.edit { // edit datastore
-                it[currentSelectionMatchesColor] = color.value.toLong()
-            }
+            appDataStoreViewModel.saveCurrentSelectionColor(color.value.toLong())
         }
-        delay(10) // delay
+        delay(10) // delay 10 ms
     }
 
     // modal drawer with saved regexp patterns list
@@ -810,7 +791,7 @@ fun MainAppScreen(
                                     if (clipData.isNotEmpty()) {
                                         appState.updateTextInputFieldState(clipData) // set data to text field state
                                         toaster.showToast("text pasted!")
-                                    }
+                                    } else toaster.showToast("nothing to paste!")
                                 },
                                 modifier = Modifier.weight(1f),
                                 shape = RoundedCornerShape(5.dp),
@@ -835,10 +816,7 @@ fun MainAppScreen(
                                 shape = RoundedCornerShape(5.dp),
                             ) {
                                 Box(
-                                    modifier = Modifier
-                                        .background(
-                                            appState.regexSelectionMatchesColor ?: Color.Transparent
-                                        ), // background - current matches count
+                                    modifier = Modifier.background(Color.fromColorLong(currentSelectionColor)), // background - current matches count
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
@@ -894,7 +872,7 @@ fun MainAppScreen(
                     },
                     visualTransformation = TextFieldVisualTransformation(
                         appState.currentRegexAsString,
-                        appState.regexSelectionMatchesColor ?: defaultSelectionColor,
+                        Color.fromColorLong(currentSelectionColor),
                         regexFlagsList.filter { flag -> flag.isSelected },
                         isGlobalSearchState,
                         appState
@@ -927,7 +905,38 @@ fun MainAppScreen(
                     Text(
                         text = regexpSyntaxAnnotatedStringBuilder.setRegexpSyntaxStyleOnRegexStringPattern(
                             buildAnnotatedString {
-                                append(REGEX_CHEAT_SHEET_TEXT)
+                                append(
+                                    "● Character classes:\n" +
+                                            ".\tany character except newline\n" +
+                                            "\\w \\d \\s\tword, digit, whitespace\n" +
+                                            "\\W \\D \\S\tnot word, digit, whitespace\n" +
+                                            "[abc]\tany of a, b, or c\n" +
+                                            "[^abc]\tnot a, b, or c\n" +
+                                            "[a-g]\tcharacter between a & g\n" +
+                                            "\n" +
+                                            "● Anchors:\n" +
+                                            "^abc$\tstart / end of the string\n" +
+                                            "\\b\tword boundary\n" +
+                                            "\n" +
+                                            "● Escaped characters:\n" +
+                                            "\\. \\* \\\\\tescaped special characters\n" +
+                                            "\\t \\n \\r\t tab, linefeed, carriage return\n" +
+                                            "\\u00A9\tunicode escaped ©\n" +
+                                            "\n" +
+                                            "● Groups & Lookaround:\n" +
+                                            "(abc)\tcapture group\n" +
+                                            "\\1\tbackreference to group #1\n" +
+                                            "(?:abc)\tnon-capturing group\n" +
+                                            "(?=abc)\tpositive lookahead\n" +
+                                            "(?!abc)\tnegative lookahead\n" +
+                                            "\n" +
+                                            "● Quantifiers & Alternation:\n" +
+                                            "a* a+ a?\t0 or more, 1 or more, 0 or 1\n" +
+                                            "a{5} a{2,}\texactly five, two or more\n" +
+                                            "a{1,3}\tbetween one & three\n" +
+                                            "a+? a{2,}?\tmatch as few as possible\n" +
+                                            "ab|cd\tmatch ab or cd"
+                                )
                             },
                         ),
                         modifier = Modifier
@@ -1006,7 +1015,7 @@ fun MainAppScreen(
             state = appState.colorPickerState,
             onDismissRequestFunction = { appState.updateColorPickerState(false) },
             onColorChangedFunction = appState::updateRegexSelectionMatchesColorState,
-            initialColor = appState.regexSelectionMatchesColor ?: defaultSelectionColor,
+            initialColor = Color.fromColorLong(currentSelectionColor),
             configuration = configuration,
             title = "Select regexp match color"
         )

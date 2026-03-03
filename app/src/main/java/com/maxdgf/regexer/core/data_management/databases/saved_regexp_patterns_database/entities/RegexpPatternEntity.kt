@@ -1,4 +1,4 @@
-package com.maxdgf.regexer.core.data_management.databases.saved_regexp_patterns_database
+package com.maxdgf.regexer.core.data_management.databases.saved_regexp_patterns_database.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

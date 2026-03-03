@@ -2,6 +2,7 @@ package com.maxdgf.regexer.core.data_management.databases.saved_regexp_patterns_
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import com.maxdgf.regexer.core.data_management.databases.saved_regexp_patterns_database.entities.RegexpPatternEntity
 
 @Database(
     entities = [RegexpPatternEntity::class], // entities

@@ -2,21 +2,18 @@ package com.maxdgf.regexer.ui.data_management.view_models
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.maxdgf.regexer.core.data_management.databases.saved_regexp_patterns_database.RegexpPatternDao
-import com.maxdgf.regexer.core.data_management.databases.saved_regexp_patterns_database.RegexpPatternEntity
-import com.maxdgf.regexer.core.data_management.databases.saved_regexp_patterns_database.RegexpPatternRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+import com.maxdgf.regexer.core.data_management.databases.saved_regexp_patterns_database.entities.RegexpPatternEntity
+import com.maxdgf.regexer.core.data_management.databases.saved_regexp_patterns_database.repository.RegexpPatternRepository
+
 @HiltViewModel
-class SavedRegexpPatternsState @Inject constructor(
-    private val regexpPatternsDao: RegexpPatternDao,
-    regexpPatternRepository: RegexpPatternRepository
-) : ViewModel() {
-    val savedRegexpPatternsList = regexpPatternRepository.allSavedRegexpPatterns().stateIn(
+class SavedRegexpPatternsState @Inject constructor(private val regexpPatternRepository: RegexpPatternRepository) : ViewModel() {
+    val savedRegexpPatternsList = regexpPatternRepository.getAllSavedRegexpPatterns().stateIn(
         viewModelScope,
         SharingStarted.Lazily,
         emptyList()
@@ -28,7 +25,7 @@ class SavedRegexpPatternsState @Inject constructor(
      */
     fun addRegexp(regexp: RegexpPatternEntity) {
         viewModelScope.launch {
-            regexpPatternsDao.addRegexpPattern(regexp)
+            regexpPatternRepository.addRegexpPattern(regexp)
         }
     }
 
@@ -38,14 +35,14 @@ class SavedRegexpPatternsState @Inject constructor(
      */
     fun deleteRegexpByUuid(uuid: String) {
         viewModelScope.launch {
-            regexpPatternsDao.deleteRegexpPatternByUuid(uuid)
+            regexpPatternRepository.deleteRegexpPatternByUuid(uuid)
         }
     }
 
     /**Deletes all regexp pattern items from db.*/
     fun deleteAllRegexpPatterns() {
         viewModelScope.launch {
-            regexpPatternsDao.deleteAllSavedRegexpPatterns()
+            regexpPatternRepository.deleteAllSavedRegexpPatterns()
         }
     }
 }
