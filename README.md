@@ -2,7 +2,7 @@
 
 ![Logo](previews/regexer_project_logo.png)
 
-A simple and easy-to-use 📱Android app built in *Jetpack Compose* and based on Kotlin **Regex** library for testing regular expressions.📃
+An **experimental**, simple and easy-to-use 📱Android app built in *Jetpack Compose* and based on Kotlin **Regex** library for testing regular expressions.📃
 
 ## 📚Used libs:
  * dagger-hilt
