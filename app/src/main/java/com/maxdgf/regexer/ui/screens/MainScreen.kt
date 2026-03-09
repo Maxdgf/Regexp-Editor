@@ -98,6 +98,7 @@ import com.maxdgf.regexer.core.system_utils.UrlOpener
 import com.maxdgf.regexer.ui.components.AlertUiDialog
 import com.maxdgf.regexer.ui.components.BottomUiSheet
 import com.maxdgf.regexer.ui.components.ColorPickerSheet
+import com.maxdgf.regexer.ui.components.NoDataUiDescriptionBlock
 import com.maxdgf.regexer.ui.components.RegexUiMatch
 import com.maxdgf.regexer.ui.components.RegexerUiDialogTitle
 import com.maxdgf.regexer.ui.components.SavedRegexpPatternUiItem
@@ -178,37 +179,46 @@ fun MainAppScreen(
                         dismissDialogButtonFunction = { drawerStateScope.launch { drawerState.close() } }
                     )
 
-                    // saved regexp patterns list
-                    LazyColumn(modifier = Modifier.weight(1f)) {
-                        itemsIndexed(
-                            items = savedRegexpPatternsList,
-                            key = { index, regexp -> regexp.uuid }
-                        ) { index, regexp ->
-                            SavedRegexpPatternUiItem(
-                                regexp = regexpSyntaxAnnotatedStringBuilder.setRegexpSyntaxStyleOnRegexStringPattern(
-                                    buildAnnotatedString { append(regexp.regexpString) }, // setting style
-                                ),
-                                regexpName = regexp.name,
-                                deleteButtonFunction = {
-                                    savedRegexpPatternsState.deleteRegexpByUuid(regexp.uuid) // delete
-                                    drawerStateScope.launch { drawerState.close() } // close modal drawer sheet
-                                },
-                                itemClickFunction = {
-                                    appState.apply {
-                                        updateRegexInputFieldState(regexp.regexpString)
-                                        updateIsRegexGlobalSearch(regexp.isGlobalSearchState)
-                                        setSelectedFlags(regexp.flags)
-                                    }
+                    if (savedRegexpPatternsList.isNotEmpty())
+                        // saved regexp patterns list
+                        LazyColumn(modifier = Modifier.weight(1f)) {
+                            itemsIndexed(
+                                items = savedRegexpPatternsList,
+                                key = { index, regexp -> regexp.uuid }
+                            ) { index, regexp ->
+                                SavedRegexpPatternUiItem(
+                                    regexp = regexpSyntaxAnnotatedStringBuilder.setRegexpSyntaxStyleOnRegexStringPattern(
+                                        buildAnnotatedString { append(regexp.regexpString) }, // setting style
+                                    ),
+                                    regexpName = regexp.name,
+                                    deleteButtonFunction = {
+                                        savedRegexpPatternsState.deleteRegexpByUuid(regexp.uuid) // delete
+                                        drawerStateScope.launch { drawerState.close() } // close modal drawer sheet
+                                    },
+                                    itemClickFunction = {
+                                        appState.apply {
+                                            updateRegexInputFieldState(regexp.regexpString)
+                                            updateIsRegexGlobalSearch(regexp.isGlobalSearchState)
+                                            setSelectedFlags(regexp.flags)
+                                        }
 
-                                    toaster.showToast(regexp.name)
-                                    drawerStateScope.launch { drawerState.close() } // close modal drawer sheet
-                                },
-                                flagsString = regexp.flags
-                            )
+                                        toaster.showToast(regexp.name)
+                                        drawerStateScope.launch { drawerState.close() } // close modal drawer sheet
+                                    },
+                                    flagsString = regexp.flags
+                                )
 
-                            if (index < savedRegexpPatternsList.lastIndex) HorizontalDivider() // divider
+                                if (index < savedRegexpPatternsList.lastIndex) HorizontalDivider() // divider
+                            }
                         }
-                    }
+                    else
+                        // show no-data description block
+                        NoDataUiDescriptionBlock(
+                            description = "No saved regexp patterns :(",
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth()
+                        )
 
                     Button(
                         onClick = {
