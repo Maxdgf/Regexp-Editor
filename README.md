@@ -24,16 +24,20 @@ An **experimental**, simple and easy-to-use 📱Android app built in *Jetpack Co
             <img src="previews\regexer3.jpg">
         </td>
         <td>
-            <img src="previews\regexer5.jpg">
-        </td>
-        <td>
             <img src="previews\regexer6.jpg">
+        </td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td>
+            <img src="previews\regexer4.jpg">
         </td>
         <td>
             <img src="previews\regexer7.jpg">
         </td>
         <td>
-            <img src="previews\regexer4.jpg">
+            <img src="previews\regexer5.jpg">
         </td>
     </tr>
 </table>
