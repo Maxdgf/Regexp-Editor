@@ -1,5 +1,9 @@
 # Regexp-Editor
 
+![Compose BOM](https://img.shields.io/badge/Compose%20Bom-2026.02.01-blue)
+![Kotlin](https://img.shields.io/badge/Kotlin-2.0.21-purple)
+![Min Sdk](https://img.shields.io/badge/Min%20Sdk-26-green)
+
 ![Logo](previews/regexer_project_logo.png)
 
 An **experimental**, simple and easy-to-use 📱Android app built in *Jetpack Compose* and based on Kotlin **Regex** library for testing regular expressions.📃
@@ -11,7 +15,7 @@ An **experimental**, simple and easy-to-use 📱Android app built in *Jetpack Co
  * viewmodel
  * <a href="https://github.com/skydoves/colorpicker-compose">colorpicker-compose</a>
 
- ## 🖼Gallery (vertical and horizontal, light and dark themes)
+ ## 🖼️Gallery (vertical and horizontal, light and dark themes)
  <table>
     <tr>
         <td>
