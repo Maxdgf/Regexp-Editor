@@ -1,4 +1,4 @@
-# Regexp-Editor
+<h1 align="center">Regexp-Editor</h1>
 
 ![Compose BOM](https://img.shields.io/badge/Compose%20Bom-2026.02.01-blue)
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.0.21-purple)
