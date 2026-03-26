@@ -1,6 +1,7 @@
 package com.maxdgf.regexer.core.data_management.app_data_store.repository
 
 import android.content.Context
+import androidx.compose.ui.graphics.Color
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -16,7 +17,7 @@ class AppDataStoreRepositoryImpl @Inject constructor(private val context: Contex
     }
 
     override fun getCurrentSelectionColor(): Flow<Long> = context.dataStore.data.map {
-        it[currentSelectionMatchesColor] ?: -1099511627776 // yellow long
+        it[currentSelectionMatchesColor] ?: Color.Yellow.value.toLong() // yellow long
     }
 
     override suspend fun saveCurrentSelectionColor(color: Long) {

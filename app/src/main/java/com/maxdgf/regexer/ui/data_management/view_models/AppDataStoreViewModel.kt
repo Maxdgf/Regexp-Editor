@@ -11,7 +11,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AppDataStoreViewModel @Inject constructor(private val appDataStoreRepository: AppDataStoreRepository) : ViewModel() {
+class AppDataStoreViewModel @Inject constructor(
+    private val appDataStoreRepository: AppDataStoreRepository
+) : ViewModel() {
     val currentSelectionColor = appDataStoreRepository.getCurrentSelectionColor().stateIn(
         viewModelScope,
         SharingStarted.Lazily,

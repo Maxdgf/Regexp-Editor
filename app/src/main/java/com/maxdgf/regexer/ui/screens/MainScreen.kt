@@ -11,6 +11,7 @@ import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -55,7 +56,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.toString
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
@@ -80,14 +80,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.maxdgf.regexer.FILES_TYPE
 import kotlinx.coroutines.delay
 
-import com.maxdgf.regexer.OPEN_SOURCE_PROJECT_DESCRIPTION
 import com.maxdgf.regexer.R
-import com.maxdgf.regexer.REGEXER_APP_GITHUB_REPO_LINK
-import com.maxdgf.regexer.REGEXER_APP_INFO
-import com.maxdgf.regexer.TEXT_LIMIT
 import com.maxdgf.regexer.core.data_management.databases.saved_regexp_patterns_database.entities.RegexpPatternEntity
 import com.maxdgf.regexer.core.regex.RegexpSyntaxAnnotatedStringBuilder
 import com.maxdgf.regexer.core.system_utils.AppManager
@@ -110,6 +105,10 @@ import com.maxdgf.regexer.ui.utils.CurrentThemeColor
 import com.maxdgf.regexer.ui.utils.RegexFieldVisualTransformation
 import com.maxdgf.regexer.ui.utils.TextFieldVisualTransformation
 import kotlinx.coroutines.launch
+
+private const val FILES_TYPE = "text/*"
+private const val TEXT_LIMIT = 2500
+private const val REGEXER_APP_GITHUB_REPO_LINK = "https://github.com/Maxdgf/Regexp-Editor"
 
 /**Creates a main app screen.*/
 @OptIn(ExperimentalMaterial3Api::class)
@@ -148,7 +147,7 @@ fun MainAppScreen(
         }
     }
 
-    // viewmodel state value observers
+    // states
     val regexFlagsList by appState.regexFlagsList.collectAsState()
     val isGlobalSearchState by appState.isRegexGlobalSearch.collectAsState()
     val isLiteralFlagEnabledState by appState.isLiteralFlagEnabled.collectAsState()
@@ -579,12 +578,7 @@ fun MainAppScreen(
                             checked = isGlobalSearchState,
                             onCheckedChange = {
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress) //haptic
-                                appState.updateIsRegexGlobalSearch(
-                                    when (isGlobalSearchState) {
-                                        true -> false
-                                        false -> true
-                                    }
-                                )
+                                appState.updateIsRegexGlobalSearch(!isGlobalSearchState)
                             }
                         )
                     }
@@ -979,13 +973,13 @@ fun MainAppScreen(
             ) {
                 // project info
                 Text(
-                    text = REGEXER_APP_INFO,
+                    text = "This is a simple application with a convenient and clear interface for testing your regular expression patterns.",
                     modifier = Modifier.fillMaxWidth()
                 )
 
                 // open source project description
                 Text(
-                    text = OPEN_SOURCE_PROJECT_DESCRIPTION,
+                    text = "This application is open source, for more details you can visit the link below:",
                     modifier = Modifier.fillMaxWidth()
                 )
 
