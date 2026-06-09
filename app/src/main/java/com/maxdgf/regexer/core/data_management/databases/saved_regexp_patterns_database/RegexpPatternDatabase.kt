@@ -6,7 +6,7 @@ import com.maxdgf.regexer.core.data_management.databases.saved_regexp_patterns_d
 
 @Database(
     entities = [RegexpPatternEntity::class], // entities
-    version = 3 // db version index
+    version = 4 // db version index
 )
 abstract class RegexpPatternDatabase : RoomDatabase() {
     abstract fun getRegexpPatternDao(): RegexpPatternDao

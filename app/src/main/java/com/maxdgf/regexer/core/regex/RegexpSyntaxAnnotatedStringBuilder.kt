@@ -14,12 +14,12 @@ class RegexpSyntaxAnnotatedStringBuilder {
     -2 - color for colorize part of the syntax
     */
     private val syntaxCollection = setOf(
-        Regex("(?<!\\\\)[\\^$]") to Color(0xFF962501), // end, start (^$)
+        Regex("(?<!\\\\)[\\^$]") to Color(0xFF962501),                                    // end, start (^$)
         Regex("\\\\w|\\\\d|\\\\s", RegexOption.IGNORE_CASE) to Color(0xFFFF5722), // \w \W \d \D \s \S
-        Regex("(?<!\\\\)[()]") to Color(0xFF4CAF50), // ()
-        Regex("(?<!\\\\)[\\[\\].]") to Color(0xFFFFC107), // [].
-        Regex("(?<!\\\\)[{}?!*+]") to Color(0xFF2196F3), // {} ?!*+
-        Regex("(?<!\\\\)\\|") to Color(0xFF2196F3) // |
+        Regex("(?<!\\\\)[()]") to Color(0xFF4CAF50),                                      // ()
+        Regex("(?<!\\\\)[\\[\\].]") to Color(0xFFFFC107),                                 // [].
+        Regex("(?<!\\\\)[{}?!*+]") to Color(0xFF2196F3),                                  // {} ?!*+
+        Regex("(?<!\\\\)\\|") to Color(0xFF2196F3)                                        // |
     )
 
     /**
@@ -66,7 +66,7 @@ class RegexpSyntaxAnnotatedStringBuilder {
                     val sortedMatchesList = matchesList.sortedBy { it.range.first } // sort matches by detection order
 
                     sortedMatchesList.forEach { match ->
-                        val matchStart = match.range.start // match start index
+                        val matchStart = match.range.first  // match start index
                         val matchEnd = match.range.last + 1 // match end index
 
                         // configuring text part with match
@@ -81,7 +81,7 @@ class RegexpSyntaxAnnotatedStringBuilder {
                             }?.second ?: Color.Black // default color
                         )
 
-                        resultAnnotatedString.append(beforeMatchPart) // adding before match part
+                        resultAnnotatedString.append(beforeMatchPart)                     // adding before match part
                         resultAnnotatedString.withStyle(matchStyle) { append(matchPart) } // adding match part with span style
 
                         lastIndex += partLength // updating last index of last match

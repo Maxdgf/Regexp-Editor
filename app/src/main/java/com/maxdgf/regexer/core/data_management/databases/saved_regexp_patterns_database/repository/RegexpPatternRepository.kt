@@ -6,6 +6,6 @@ import kotlinx.coroutines.flow.Flow
 interface RegexpPatternRepository {
     fun getAllSavedRegexpPatterns(): Flow<List<RegexpPatternEntity>>
     suspend fun addRegexpPattern(regexp: RegexpPatternEntity)
-    suspend fun deleteRegexpPatternByUuid(uuid: String)
+    suspend fun deleteRegexpPatternByUuid(id: Long)
     suspend fun deleteAllSavedRegexpPatterns()
 }

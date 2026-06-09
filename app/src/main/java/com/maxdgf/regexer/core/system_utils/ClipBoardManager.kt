@@ -11,7 +11,7 @@ class ClipBoardManager(context: Context) {
      * @return text from clipboard.
      */
     fun getClipboardText(): String {
-        var clipItemText = StringBuilder() // clip text string builder
+        val clipItemText = StringBuilder() // clip text string builder
 
         val clipData = clipboard.primaryClip // current primary clip in the clipboard
 

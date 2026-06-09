@@ -83,7 +83,7 @@ class RegexAnnotatedStringBuilder(private val appState: AppState) {
                 }
 
                 if (matchesCount > 0) { // if there is a match ->
-                    var lastIndex = 0 // last index of last match
+                    var lastIndex = 0                    // last index of last match
                     val materialLength = material.length // input text length
 
                     appState.updateMatchesCount(matchesCount) // updating matches count state
@@ -96,7 +96,7 @@ class RegexAnnotatedStringBuilder(private val appState: AppState) {
                                 if (it is MatchResult) {
                                     RegexMatch(
                                         match = it.value,
-                                        start = it.range.start,
+                                        start = it.range.first,
                                         end = it.range.last + 1
                                     )
                                 } else RegexMatch(match = "", start = 0, end = 0)
@@ -105,7 +105,7 @@ class RegexAnnotatedStringBuilder(private val appState: AppState) {
 
                         allMatches.forEach { match ->
                             if (match is MatchResult) {
-                                val matchStart = match.range.start // match start index
+                                val matchStart = match.range.first // match start index
                                 val matchEnd = match.range.last + 1 // match end index
 
                                 // configuring text part with match
@@ -113,20 +113,20 @@ class RegexAnnotatedStringBuilder(private val appState: AppState) {
                                 val matchPart = material.substring(matchStart, matchEnd) // match part
                                 val partLength = (beforeMatchPart + matchPart).length // all part length
 
-                                resultAnnotatedString.append(beforeMatchPart) // adding before match part
+                                resultAnnotatedString.append(beforeMatchPart)                         // adding before match part
                                 resultAnnotatedString.withStyle(matchSpanStyle) { append(matchPart) } // adding match part with span style
-                                lastIndex += partLength // updating last index of last match
+                                lastIndex += partLength                                               // updating last index of last match
                             } else return@forEach // skip current iteration forEach if match not is MatchResult
                         }
                     } else if (allMatches is MatchResult?) {
                         allMatches?.let { match ->
-                            val matchStart = match.range.start // match start index
+                            val matchStart = match.range.first  // match start index
                             val matchEnd = match.range.last + 1 // match end index
 
                             // configuring text part with match
                             val beforeMatchPart = material.substring(lastIndex, matchStart) // before match text part
-                            val matchPart = material.substring(matchStart, matchEnd) // match part
-                            val partLength = (beforeMatchPart + matchPart).length // all part length
+                            val matchPart = material.substring(matchStart, matchEnd)        // match part
+                            val partLength = (beforeMatchPart + matchPart).length           // all part length
 
                             resultAnnotatedString.append(beforeMatchPart)
                             resultAnnotatedString.withStyle(matchSpanStyle) { append(matchPart) }
@@ -146,15 +146,15 @@ class RegexAnnotatedStringBuilder(private val appState: AppState) {
                     // last match index check
                     if (lastIndex < materialLength) {
                         val otherText = material.substring(lastIndex) // remaining text after the last match
-                        resultAnnotatedString.append(otherText) // adding remaining text after the last match
+                        resultAnnotatedString.append(otherText)       // adding remaining text after the last match
                     }
                 } else {
                     resultAnnotatedString.append(material) // adding text without style
-                    appState.updateMatchesCount(0) // updating matches count to 0
+                    appState.updateMatchesCount(0)         // updating matches count to 0
                 }
             } else {
                 resultAnnotatedString.append(material) // adding text without style
-                appState.updateMatchesCount(0) // updating matches count to 0
+                appState.updateMatchesCount(0)         // updating matches count to 0
             }
         } catch (e: PatternSyntaxException) {
             // handling pattern syntax exception ->

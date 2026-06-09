@@ -15,8 +15,8 @@ interface RegexpPatternDao {
     @Insert(onConflict = REPLACE) // add pattern
     suspend fun addRegexpPattern(regexp: RegexpPatternEntity)
 
-    @Query("DELETE FROM saved_regexp_patterns WHERE regexp_uuid = :uuid") // delete current pattern by id
-    suspend fun deleteRegexpPatternByUuid(uuid: String)
+    @Query("DELETE FROM saved_regexp_patterns WHERE regexpId = :id") // delete current pattern by id
+    suspend fun deleteRegexpPatternByUuid(id: Long)
 
     @Query("DELETE FROM saved_regexp_patterns") //delete all patterns
     suspend fun deleteAllSavedRegexpPatterns()

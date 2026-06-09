@@ -31,11 +31,11 @@ class SavedRegexpPatternsState @Inject constructor(private val regexpPatternRepo
 
     /**
      * Deletes regexp pattern item from db.
-     * @param uuid regexp item uuid.
+     * @param id regexp item id.
      */
-    fun deleteRegexpByUuid(uuid: String) {
+    fun deleteRegexpByUuid(id: Long) {
         viewModelScope.launch {
-            regexpPatternRepository.deleteRegexpPatternByUuid(uuid)
+            regexpPatternRepository.deleteRegexpPatternByUuid(id)
         }
     }
 

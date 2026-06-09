@@ -13,7 +13,7 @@ class FileManager(context: Context) {
      * @return file content.
      */
     fun openTextFile(uri: Uri): String {
-        var fileContent = StringBuilder()
+        val fileContent = StringBuilder()
 
         try {
             val inputStream = contentResolver.openInputStream(uri)

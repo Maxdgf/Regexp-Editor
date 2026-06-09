@@ -11,7 +11,6 @@ import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -183,7 +182,7 @@ fun MainAppScreen(
                         LazyColumn(modifier = Modifier.weight(1f)) {
                             itemsIndexed(
                                 items = savedRegexpPatternsList,
-                                key = { index, regexp -> regexp.uuid }
+                                key = { _, regexp -> regexp.regexpId }
                             ) { index, regexp ->
                                 SavedRegexpPatternUiItem(
                                     regexp = regexpSyntaxAnnotatedStringBuilder.setRegexpSyntaxStyleOnRegexStringPattern(
@@ -191,7 +190,7 @@ fun MainAppScreen(
                                     ),
                                     regexpName = regexp.name,
                                     deleteButtonFunction = {
-                                        savedRegexpPatternsState.deleteRegexpByUuid(regexp.uuid) // delete
+                                        savedRegexpPatternsState.deleteRegexpByUuid(regexp.regexpId) // delete
                                         drawerStateScope.launch { drawerState.close() } // close modal drawer sheet
                                     },
                                     itemClickFunction = {
@@ -421,7 +420,7 @@ fun MainAppScreen(
                         LazyColumn(modifier = Modifier.fillMaxSize()) {
                             itemsIndexed(
                                 items = appState.allMatchesByRegexpList,
-                                key = { index, match -> match.id }
+                                key = { _, match -> match.id }
                             ) { index, match ->
                                 RegexUiMatch(
                                     index = index + 1,
@@ -550,13 +549,7 @@ fun MainAppScreen(
                                         checked = flag.isSelected,
                                         onCheckedChange = {
                                             haptic.performHapticFeedback(HapticFeedbackType.LongPress) //haptic
-                                            appState.setSelectedRegexFlagState(
-                                                when (flag.isSelected) {
-                                                    true -> false
-                                                    false -> true
-                                                },
-                                                flag.name
-                                            )
+                                            appState.setSelectedRegexFlagState(!flag.isSelected, flag.name)
                                         },
                                         modifier = Modifier.align(Alignment.CenterVertically)
                                     )
